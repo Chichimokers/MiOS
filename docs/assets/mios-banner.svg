@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 480" width="1600" height="480" role="img" aria-label="MiOS - sistema operativo mínimo: PID 1 en C, sin libc">
+  <title>MiOS</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#060C16"/>
+      <stop offset="0.5" stop-color="#08131F"/>
+      <stop offset="1" stop-color="#03060B"/>
+    </linearGradient>
+    <linearGradient id="lg-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0C1A2A"/>
+      <stop offset="0.55" stop-color="#071220"/>
+      <stop offset="1" stop-color="#04070D"/>
+    </linearGradient>
+    <linearGradient id="lg-rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22D3EE" stop-opacity="0.85"/>
+      <stop offset="0.5" stop-color="#22D3EE" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#22D3EE" stop-opacity="0.65"/>
+    </linearGradient>
+    <linearGradient id="lg-chev" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#A5F3FC"/>
+      <stop offset="0.5" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#0891B2"/>
+    </linearGradient>
+    <linearGradient id="lg-cur" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BBF7D0"/>
+      <stop offset="0.5" stop-color="#4ADE80"/>
+      <stop offset="1" stop-color="#16A34A"/>
+    </linearGradient>
+    <linearGradient id="word" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.62" stop-color="#DCF6FF"/>
+      <stop offset="1" stop-color="#7DD3FC"/>
+    </linearGradient>
+    <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22D3EE" stop-opacity="0.9"/>
+      <stop offset="0.45" stop-color="#4ADE80" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#22D3EE" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="halo1" cx="0.15" cy="0.5" r="0.45">
+      <stop offset="0" stop-color="#22D3EE" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="halo2" cx="0.9" cy="0.2" r="0.5">
+      <stop offset="0" stop-color="#4ADE80" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#4ADE80" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#38BDF8" stroke-opacity="0.07" stroke-width="1"/>
+    </pattern>
+    <clipPath id="sq">
+      <rect x="40" y="40" width="432" height="432" rx="104"/>
+    </clipPath>
+  </defs>
+
+  <!-- fondo -->
+  <rect width="1600" height="480" fill="url(#bg)"/>
+  <rect width="1600" height="480" fill="url(#grid)"/>
+  <rect width="1600" height="480" fill="url(#halo1)"/>
+  <rect width="1600" height="480" fill="url(#halo2)"/>
+  <rect x="0" y="0" width="1600" height="4" fill="url(#rule)"/>
+
+  <!-- logo -->
+  <g transform="translate(88,116) scale(0.484375)">
+    <g fill="#22D3EE" fill-opacity="0.22">
+      <rect x="12" y="140" width="24" height="22" rx="7"/>
+      <rect x="12" y="246" width="24" height="22" rx="7"/>
+      <rect x="12" y="352" width="24" height="22" rx="7"/>
+      <rect x="476" y="140" width="24" height="22" rx="7"/>
+      <rect x="476" y="246" width="24" height="22" rx="7"/>
+      <rect x="476" y="352" width="24" height="22" rx="7"/>
+      <rect x="140" y="12" width="22" height="24" rx="7"/>
+      <rect x="246" y="12" width="22" height="24" rx="7"/>
+      <rect x="352" y="12" width="22" height="24" rx="7"/>
+      <rect x="140" y="476" width="22" height="24" rx="7"/>
+      <rect x="246" y="476" width="22" height="24" rx="7"/>
+      <rect x="352" y="476" width="22" height="24" rx="7"/>
+    </g>
+    <rect x="40" y="40" width="432" height="432" rx="104" fill="url(#lg-bg)"/>
+    <g clip-path="url(#sq)">
+      <rect x="40" y="40" width="432" height="432" fill="url(#grid)"/>
+    </g>
+    <rect x="40" y="40" width="432" height="432" rx="104" fill="none" stroke="url(#lg-rim)" stroke-width="4"/>
+    <polyline points="170,186 256,256 170,326" fill="none" stroke="url(#lg-chev)"
+              stroke-width="30" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+    <rect x="278" y="288" width="58" height="38" rx="9" fill="url(#lg-cur)" filter="url(#glow)"/>
+  </g>
+
+  <!-- wordmark -->
+  <g font-family="Consolas, 'Cascadia Mono', 'JetBrains Mono', Menlo, 'DejaVu Sans Mono', monospace">
+    <text x="398" y="248" font-size="132" font-weight="700" letter-spacing="2"
+          fill="url(#word)" filter="url(#soft)">MiOS</text>
+
+    <!-- pill version -->
+    <rect x="700" y="150" width="112" height="46" rx="23" fill="#0E2233" stroke="#22D3EE" stroke-opacity="0.55"/>
+    <text x="756" y="181" font-size="24" fill="#67E8F9" text-anchor="middle">v0.5</text>
+
+    <text x="404" y="308" font-size="27" fill="#8BA3B8">PID 1 en C &#183; sin libc &#183; shell y red</text>
+
+    <!-- chips -->
+    <g font-size="21">
+      <rect x="404" y="342" width="118" height="46" rx="23" fill="#0B1A28" stroke="#22D3EE" stroke-opacity="0.30"/>
+      <text x="463" y="372" fill="#A5C7DC" text-anchor="middle">x86_64</text>
+
+      <rect x="538" y="342" width="152" height="46" rx="23" fill="#0B1A28" stroke="#22D3EE" stroke-opacity="0.30"/>
+      <text x="614" y="372" fill="#A5C7DC" text-anchor="middle">initramfs</text>
+
+      <rect x="706" y="342" width="96" height="46" rx="23" fill="#0B1A28" stroke="#22D3EE" stroke-opacity="0.30"/>
+      <text x="754" y="372" fill="#A5C7DC" text-anchor="middle">GRUB</text>
+
+      <rect x="818" y="342" width="132" height="46" rx="23" fill="#0B1A28" stroke="#22D3EE" stroke-opacity="0.30"/>
+      <text x="884" y="372" fill="#A5C7DC" text-anchor="middle">netlink</text>
+    </g>
+  </g>
+
+  <!-- panel terminal -->
+  <g font-family="Consolas, 'Cascadia Mono', 'JetBrains Mono', Menlo, 'DejaVu Sans Mono', monospace">
+    <rect x="1010" y="110" width="512" height="266" rx="18" fill="#060D16" stroke="#22D3EE" stroke-opacity="0.28" stroke-width="1.5"/>
+    <rect x="1010" y="110" width="512" height="40" rx="18" fill="#0B1A28"/>
+    <rect x="1010" y="132" width="512" height="18" fill="#0B1A28"/>
+    <circle cx="1040" cy="130" r="7" fill="#F87171" fill-opacity="0.85"/>
+    <circle cx="1064" cy="130" r="7" fill="#FBBF24" fill-opacity="0.85"/>
+    <circle cx="1088" cy="130" r="7" fill="#4ADE80" fill-opacity="0.85"/>
+    <text x="1500" y="137" font-size="17" fill="#5B7A94" text-anchor="end">/init &#8212; PID 1</text>
+    <line x1="1011" y1="150" x2="1521" y2="150" stroke="#22D3EE" stroke-opacity="0.18"/>
+
+    <g font-size="19">
+      <text x="1042" y="192" fill="#4ADE80">MiOS&gt;</text>
+      <text x="1114" y="192" fill="#E6EDF3">net</text>
+      <text x="1042" y="226" fill="#A5C7DC">ens33   ethernet   activa   mtu 1500</text>
+      <text x="1042" y="258" fill="#67E8F9">              192.168.1.87/24</text>
+      <text x="1042" y="292" fill="#4ADE80">MiOS&gt;</text>
+      <text x="1114" y="292" fill="#E6EDF3">dev</text>
+      <text x="1042" y="326" fill="#A5C7DC">ens33   mac=00:0c:29:3f:7d:64</text>
+      <text x="1042" y="358" fill="#4ADE80">MiOS&gt;</text>
+      <rect x="1114" y="343" width="13" height="19" fill="#4ADE80" filter="url(#glow)"/>
+    </g>
+  </g>
+
+  <text x="1522" y="440" font-family="Consolas, 'Cascadia Mono', Menlo, monospace" font-size="20"
+        fill="#5B7A94" text-anchor="end">github.com/Chichimokers/MiOS</text>
+</svg>
