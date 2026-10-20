@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+#
+# mios-gcc - compila y enlaza programas para MiOS.
+#
+# Es un envoltorio sobre el gcc del VPS: anade el sysroot de MiOS, los flags
+# "sin libc" y, al enlazar, crt1.o + libmios.so.6 + el cargador propio.
+#
+# Uso:
+#   ./mios-gcc hola.c -o hola      # ejecutable para MiOS
+#   ./mios-gcc -c hola.c           # solo objeto
+#   ./mios-gcc -E hola.c           # solo preprocesado
+#
+# El resultado pide /lib/ld-mios.so.1 y libmios.so.6, igual que init.
+#
+# Variables:
+#   MIOS_SYSROOT   sysroot a usar (por defecto <repo>/sysroot)
+#   MIOS_CC        compilador a usar (por defecto gcc)
+#   MIOS_HOST_RUN  si no esta vacio, graba rutas ABSOLUTAS al sysroot en el
+#                  ejecutable (interprete y -rpath) para que TAMBIEN se pueda
+#                  ejecutar en el VPS fuera de MiOS. Lo usan los 'configure'
+#                  de binutils/gcc, que compilan y ejecutan programas de
+#                  prueba; dentro de MiOS esas rutas no existen, pero alli el
+#                  cargador encuentra libmios.so.6 en /lib igual que siempre.
+
+set -euo pipefail
+
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+SYSROOT="${MIOS_SYSROOT:-$ROOT/sysroot}"
+CC="${MIOS_CC:-gcc}"
+
+if [[ ! -f "$SYSROOT/usr/lib/libmios.so.6" ]]; then
+    echo "mios-gcc: no encuentro el sysroot de MiOS ($SYSROOT)." >&2
+    echo "          Ejecuta ./build.sh (o ./mk-sysroot.sh) primero." >&2
+    exit 1
+fi
+
+# Flags comunes: MiOS no tiene libc del sistema y no usa PIE.
+COMMON=(
+    --sysroot="$SYSROOT"
+    -ffreestanding
+    -fno-builtin
+    -fno-stack-protector
+    -fcf-protection=none
+    -fno-pie
+    -O2
+)
+
+# Si solo preprocesa/compila/ensambla, no hay nada que enlazar.
+for arg in "$@"; do
+    case "$arg" in
+        -c|-S|-E|-M|-MM|-MD|-MMD|-MG|-fsyntax-only)
+            exec "$CC" "${COMMON[@]}" "$@"
+            ;;
+    esac
+done
+
+# libgcc se pasa por ruta absoluta: --sysroot tambien afecta a las rutas de
+# busqueda de bibliotecas, y el libgcc del sistema no esta en el sysroot.
+LIBGCC="$("$CC" -print-libgcc-file-name)"
+
+# Biblioteca compartida (Fase 8: GMP, MPFR y MPC): no lleva crt1.o ni punto de
+# entrada (_start trae 'main' de regalo, y una .so no lo tiene), y los objetos
+# tienen que ser PIC de verdad.  libtool la invoca como "cc -shared ...".
+for arg in "$@"; do
+    if [[ "$arg" == "-shared" ]]; then
+        exec "$CC" "${COMMON[@]}" -fPIC \
+            "$@" \
+            -nostdlib -shared \
+            -Wl,-z,noexecstack \
+            -L"$SYSROOT/usr/lib" \
+            -lmios \
+            "$LIBGCC"
+    fi
+done
+
+# Con MIOS_HOST_RUN el binario apunta al sysroot con rutas absolutas (ver
+# arriba); sin el, a las rutas de MiOS.
+LD_MIOS="/lib/ld-mios.so.1"
+RPATH_ARGS=()
+if [[ -n "${MIOS_HOST_RUN:-}" ]]; then
+    LD_MIOS="$SYSROOT/lib/ld-mios.so.1"
+    RPATH_ARGS=(-Wl,-rpath,"$SYSROOT/lib")
+fi
+
+exec "$CC" "${COMMON[@]}" \
+    "$SYSROOT/usr/lib/crt1.o" \
+    "$@" \
+    -nostdlib -no-pie \
+    -Wl,-e,_start \
+    -Wl,--dynamic-linker="$LD_MIOS" \
+    "${RPATH_ARGS[@]}" \
+    -Wl,-z,noexecstack \
+    -L"$SYSROOT/usr/lib" \
+    -lmios \
+    "$LIBGCC"
