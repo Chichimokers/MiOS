@@ -1,4 +1,7 @@
 #include "mios.h"
+#include "../../include/unistd.h"
+#include "../../include/errno.h"
+#include "../../include/stdlib.h"
 
 /*
  * MiOS - comandos basicos de la shell.
@@ -36,10 +39,36 @@ static void cmd_exit(char *args) {
     cons_puts("MiOS: el PID 1 no puede terminar. El sistema sigue activo.\n");
 }
 
+static void cmd_cd(char *args) {
+    const char *path = args;
+
+    if (*path == '\0') {
+        path = getenv("HOME");
+        if (path == MIOS_NULL) {
+            path = "/";
+        }
+    }
+    if (chdir(path) != 0) {
+        cons_printf("cd: %s: %s\n", path, strerror(errno));
+    }
+}
+
+static void cmd_pwd(char *args) {
+    char buf[MIOS_MAX_PATH];
+
+    (void)args;
+    if (getcwd(buf, sizeof(buf)) != MIOS_NULL) {
+        cons_puts(buf);
+        cons_putc('\n');
+    }
+}
+
 static const command_t shell_commands[] = {
     { "help",  "Muestra los comandos",             cmd_help },
     { "clear", "Limpia la pantalla",               cmd_clear },
     { "echo",  "Repite el texto indicado",         cmd_echo },
+    { "cd",    "Cambia el directorio (cd [dir])",  cmd_cd },
+    { "pwd",   "Muestra el directorio actual",     cmd_pwd },
     { "exit",  "Avisa de que el PID 1 no termina", cmd_exit },
 };
 

@@ -11,6 +11,7 @@
 #include "lib/memory.h"
 #include "lib/convert.h"
 #include "lib/errno.h"
+#include "lib/format.h"
 #include "lib/console.h"
 
 #endif /* MIOS_LIB_H */

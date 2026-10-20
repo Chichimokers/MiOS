@@ -1,8 +1,14 @@
-#include "mios.h"
+#include "lib/lib.h"
+#include "lib/format.h"
+#include "kernel/syscall.h"
 
 /*
  * MiOS - consola del sistema.
- * Salida con buffer propio y un printf minimo (%s %c %d %u %x con ancho).
+ *
+ * Salida con buffer propio, historial circular y espejo por el puerto serie.
+ * El formateo lo hace el motor comun (src/lib/format.c), el mismo que usan
+ * printf/snprintf; aqui solo se le da una funcion que entrega los caracteres.
+ *
  * La entrada lee linea a linea desde el descriptor 0 (/dev/console).
  */
 
@@ -99,157 +105,21 @@ void cons_puts(const char *s) {
     }
 }
 
-static void emit_number(unsigned long v, int negative, int base,
-                        int width, int zero, int left) {
-    char digits[64];
-    int len = 0;
-    int i;
+/* Emisor para el motor de formato: cada caracter va a la consola. */
+static void console_put(void *ctx, char c) {
+    (void)ctx;
+    cons_putc(c);
+}
 
-    do {
-        int d = (int)(v % (unsigned long)base);
-        digits[len] = (char)(d < 10 ? ('0' + d) : ('a' + (d - 10)));
-        len++;
-        v /= (unsigned long)base;
-    } while (v > 0);
-
-    if (negative) {
-        digits[len] = '-';
-        len++;
-    }
-
-    if (left) {
-        for (i = len - 1; i >= 0; i--) {
-            cons_putc(digits[i]);
-        }
-        for (i = len; i < width; i++) {
-            cons_putc(' ');
-        }
-    } else if (zero && negative) {
-        cons_putc('-');
-        for (i = len; i < width; i++) {
-            cons_putc('0');
-        }
-        for (i = len - 2; i >= 0; i--) {
-            cons_putc(digits[i]);
-        }
-    } else {
-        for (i = len; i < width; i++) {
-            cons_putc(zero ? '0' : ' ');
-        }
-        for (i = len - 1; i >= 0; i--) {
-            cons_putc(digits[i]);
-        }
-    }
+int cons_vprintf(const char *fmt, __builtin_va_list ap) {
+    return mios_vformat(console_put, MIOS_NULL, fmt, ap);
 }
 
 void cons_printf(const char *fmt, ...) {
     __builtin_va_list ap;
+
     __builtin_va_start(ap, fmt);
-
-    while (*fmt != '\0') {
-        int left = 0;
-        int zero = 0;
-        int width = 0;
-        int is_long = 0;
-        char c;
-
-        c = *fmt;
-        if (c != '%') {
-            cons_putc(c);
-            fmt++;
-            continue;
-        }
-
-        fmt++;
-        while (*fmt == '-' || *fmt == '0') {
-            if (*fmt == '-') {
-                left = 1;
-            } else {
-                zero = 1;
-            }
-            fmt++;
-        }
-        while (*fmt >= '0' && *fmt <= '9') {
-            width = width * 10 + (*fmt - '0');
-            fmt++;
-        }
-        while (*fmt == 'l' || *fmt == 'z') {
-            is_long = 1;
-            fmt++;
-        }
-
-        switch (*fmt) {
-        case 's': {
-            const char *s = __builtin_va_arg(ap, const char *);
-            mios_size_t len;
-            mios_size_t k;
-
-            if (s == MIOS_NULL) {
-                s = "(null)";
-            }
-            len = mios_strlen(s);
-            if (!left && width > (int)len) {
-                for (k = len; k < (mios_size_t)width; k++) {
-                    cons_putc(' ');
-                }
-            }
-            for (k = 0; k < len; k++) {
-                cons_putc(s[k]);
-            }
-            if (left && width > (int)len) {
-                for (k = len; k < (mios_size_t)width; k++) {
-                    cons_putc(' ');
-                }
-            }
-            break;
-        }
-        case 'c': {
-            int ch = __builtin_va_arg(ap, int);
-            cons_putc((char)ch);
-            break;
-        }
-        case 'd': {
-            long v = is_long ? __builtin_va_arg(ap, long)
-                             : (long)__builtin_va_arg(ap, int);
-            if (v < 0) {
-                emit_number((unsigned long)(-v), 1, 10, width, zero, left);
-            } else {
-                emit_number((unsigned long)v, 0, 10, width, zero, left);
-            }
-            break;
-        }
-        case 'u': {
-            unsigned long v =
-                is_long ? __builtin_va_arg(ap, unsigned long)
-                        : (unsigned long)__builtin_va_arg(ap, unsigned int);
-            emit_number(v, 0, 10, width, zero, left);
-            break;
-        }
-        case 'x': {
-            unsigned long v =
-                is_long ? __builtin_va_arg(ap, unsigned long)
-                        : (unsigned long)__builtin_va_arg(ap, unsigned int);
-            emit_number(v, 0, 16, width, zero, left);
-            break;
-        }
-        case '%': {
-            cons_putc('%');
-            break;
-        }
-        case '\0': {
-            cons_putc('%');
-            fmt--;
-            break;
-        }
-        default: {
-            cons_putc('%');
-            cons_putc(*fmt);
-            break;
-        }
-        }
-        fmt++;
-    }
-
+    cons_vprintf(fmt, ap);
     __builtin_va_end(ap);
 }
 

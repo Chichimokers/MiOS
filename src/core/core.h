@@ -22,6 +22,9 @@ const command_t *shell_command_get(mios_size_t index);
 void shell_init(void);
 void shell_run(void);
 
+/* Programas externos (src/core/prog.c) */
+int prog_run(const char *cmd, char *args);
+
 /* Arranque (src/core/boot.c) */
 void boot_setup_environment(void);
 void boot_banner(void);

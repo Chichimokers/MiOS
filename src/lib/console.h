@@ -4,6 +4,7 @@
 #include "lib/types.h"
 
 void cons_printf(const char *fmt, ...);
+int  cons_vprintf(const char *fmt, __builtin_va_list ap);
 void cons_puts(const char *s);
 void cons_putc(char c);
 void cons_flush(void);

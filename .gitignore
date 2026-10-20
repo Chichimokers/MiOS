@@ -1,2 +1,32 @@
 *.iso
 *.cpio.gz
+
+# Artefactos intermedios del build
+build/
+
+# Sysroot de MiOS (se regenera con build.sh / mk-sysroot.sh)
+sysroot/
+
+# Binarios de MiOS que trae mios-cc.bat
+mios-bin/
+
+# Libreria y cargador generados por build.sh dentro del initramfs
+initramfs/lib/libmios.so.6
+initramfs/lib/ld-mios.so.1
+
+# Bibliotecas aritmeticas de GCC (GMP/MPFR/MPC) que instala tools/build-gcc-libs.sh
+initramfs/lib/libgmp.so*
+initramfs/lib/libmpfr.so*
+initramfs/lib/libmpc.so*
+
+# Programas de /bin generados por build.sh (desde userland/)
+initramfs/bin/
+
+# tcc y lo que necesita dentro del initramfs (lo instala tools/build-tcc.sh):
+# el compilador, sus cabeceras privadas, las cabeceras publicas y el crt
+initramfs/lib/tcc/
+initramfs/usr/
+initramfs/tmp/
+
+# Fuentes de terceros (tcc): se bajan con tools/fetch-tcc.sh, no se versionan
+third_party/

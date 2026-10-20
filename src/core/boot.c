@@ -1,4 +1,5 @@
 #include "mios.h"
+#include "../../include/stdlib.h"
 
 /*
  * MiOS - secuencia de arranque del PID 1.
@@ -36,6 +37,11 @@ void boot_setup_environment(void) {
     mount_fs("devtmpfs", "/dev", "devtmpfs");
 
     ensure_console();
+
+    /* Entorno minimo para el shell y los programas que lanza (Fase 4). */
+    setenv("PATH", "/bin:/usr/bin", 1);
+    setenv("PWD", "/", 1);
+    setenv("HOME", "/", 1);
 }
 
 void boot_banner(void) {

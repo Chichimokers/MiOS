@@ -67,8 +67,64 @@ static void shell_execute(char *line) {
         }
     }
 
-    cons_printf("Comando desconocido: %s\n", cmd);
-    cons_puts("Escribe 'help' para ver los comandos.\n");
+    /* No es un comando interno: se intenta ejecutar como programa (de /bin,
+     * via PATH).  Si no existe, el hijo lo avisa y devuelve 127. */
+    prog_run(cmd, args);
+}
+
+/*
+ * Ejecuta /etc/autorun al arrancar: una orden por linea.  Las lineas vacias y
+ * las que empiezan por '#' se ignoran.  Sirve para lanzar programas o ajustar
+ * cosas al arrancar sin teclear nada.
+ */
+static void shell_autorun(void) {
+    char buf[4096];
+    char *p;
+    int fd;
+    long n;
+
+    fd = mios_open("/etc/autorun", MIOS_O_RDONLY, 0);
+    if (fd < 0) {
+        return;
+    }
+    n = mios_read(fd, buf, sizeof(buf) - 1);
+    mios_close(fd);
+    if (n <= 0) {
+        return;
+    }
+    buf[n] = '\0';
+
+    p = buf;
+    while (*p != '\0') {
+        char *line = p;
+        char *e = p;
+        char *q;
+        mios_size_t len;
+
+        while (*e != '\0' && *e != '\n') {
+            e++;
+        }
+        if (*e == '\n') {
+            *e = '\0';
+            p = e + 1;
+        } else {
+            p = e;
+        }
+
+        len = mios_strlen(line);
+        if (len > 0 && line[len - 1] == '\r') { /* ficheros de Windows */
+            line[len - 1] = '\0';
+        }
+
+        q = line;
+        while (*q == ' ' || *q == '\t') {
+            q++;
+        }
+        if (*q == '\0' || *q == '#') {
+            continue;
+        }
+        shell_execute(line);
+    }
 }
 
 void shell_init(void) {
@@ -82,6 +138,8 @@ void shell_init(void) {
 
 void shell_run(void) {
     char line[MIOS_MAX_LINE];
+
+    shell_autorun();
 
     for (;;) {
         cons_puts("MiOS> ");
