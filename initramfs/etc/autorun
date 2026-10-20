@@ -1,0 +1,30 @@
+# /etc/autorun - ordenes que el shell de MiOS ejecuta al arrancar.
+# Una orden por linea.  Las lineas vacias y las que empiezan por '#' se ignoran.
+# Con el fichero asi (sin ordenes) el arranque no hace nada.
+#
+# Ejemplos (descomenta lo que quieras):
+#
+#   selftest                      autoprueba de MiOS (procesos, exec, pipe...)
+#   hola                          un programa de /bin
+#   args uno dos                  argumentos (termina con codigo = argc)
+#
+# Con el compilador que va dentro de MiOS (tcc, Fase 5):
+#
+#   tcc -o /tmp/hola /usr/src/hola.c            compila
+#   /tmp/hola                                   ejecuta lo compilado
+#   runlog tcc -o /tmp/hola /usr/src/hola.c     igual, copiando la salida
+#                                               (y los errores) al puerto serie
+#
+# Y el self-hosting en C (Fase 6): tcc se compila a si mismo y el tcc que sale
+# compila un programa.  Tarda un rato, por eso va comentado:
+#
+#   runlog tcc -o /tmp/tcc2 /usr/src/tcc/tcc.c
+#   runlog /tmp/tcc2 -o /tmp/hola2 /usr/src/hola.c
+#   runlog /tmp/hola2
+#
+# Y el editor de texto (edit): se abre con 'edit fichero.c' y se sale con
+# Ctrl-Q (Ctrl-S guarda).  NO conviene ponerlo aqui: espera teclas y bloquea el
+# arranque.  Sus pruebas automaticas si se pueden poner:
+#
+#   runlog edit --selftest        motor de edicion (no toca la consola)
+#   runlog edit --ttytest         modo crudo de la consola

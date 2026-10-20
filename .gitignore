@@ -30,3 +30,5 @@ initramfs/tmp/
 
 # Fuentes de terceros (tcc): se bajan con tools/fetch-tcc.sh, no se versionan
 third_party/
+config.bat
+node_modules
